@@ -1,0 +1,6 @@
+{
+    "workbench.editor.wrapTabs": true,
+    "python.analysis.extraPaths": [
+        "./scripts/lib"
+    ]
+}

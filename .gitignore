@@ -1,0 +1,17 @@
+/scripts/lib
+/training
+/models/bin
+/models/gguf
+/models/M2M100
+/models/safetensors
+
+
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.DS_Store
+*.userprefs
+*.~$lock
+*.bak
