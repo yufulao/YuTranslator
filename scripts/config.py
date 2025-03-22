@@ -27,15 +27,15 @@ TRAINING_ROOT = os.path.join(PROJECT_ROOT, "training")
 # "Meta-Llama-3-8B-Instruct-Q4_K_M.gguf" 差不多
 # "DeepSeek-R1-Distill-Qwen-1.5B-IQ2_M.gguf" 弱智
 
-SUPPORTED_LANGUAGES = [
-    "eng_Latn",
-    "zho_Hans",
-    "zho_Hant",
-    "jpn_Jpan",
-    "deu_Latn",
-]
+# SUPPORTED_LANGUAGES = [
+#     "eng_Latn",
+#     "zho_Hans",
+#     "zho_Hant",
+#     "jpn_Jpan",
+#     "deu_Latn",
+# ]
 
-SUPPORTED_LANGUAGES = ["English", "French", "German", "Spanish", "Japanese"]
+SUPPORTED_LANGUAGES = ["English", "Chinese", "Japanese", "French", "German", "Spanish"]
 
 # 语言映射NLLB语言代码
 LANG_MAP = {
@@ -52,5 +52,8 @@ M2M100_SUPPORTED_LANGUAGES = [
     "ja",
     "de",
 ]
+
+# BERTScore F1评估可选语言
+BERT_SCORE_LANGUAGES = ["zh", "en", "ja", "de", "fr", "es", "ko", "ru", "pt"]
 
 

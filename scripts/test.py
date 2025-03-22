@@ -10,6 +10,7 @@ sys.path.insert(0, config.LIB_DIR)
 import evaluate
 import nltk
 from transformers import pipeline
+import jieba
 
 # 下载 METEOR 所需的词典（只需要一次）
 nltk.download("wordnet")
@@ -21,12 +22,13 @@ chrf = evaluate.load("chrf")
 meteor = evaluate.load("meteor")
 
 # 原文（源语言）、预测翻译、参考翻译（目标语言）
-sources = ["I went to the supermarket today."]
 predictions = ["我今天去超市了。"]
-references = [["今天我去超市了。"]]  # 多个参考翻译需用二维列表
+references = [["我今天去超市了。"]]  # 多个参考翻译需用二维列表
 
 # ========== 1. 常规评估 ==========
-print("🚀 普通评估（需要参考翻译）:")
+print("普通评估（需要参考翻译）:")
+# predictions = [" ".join(jieba.cut(s)) for s in predictions]
+# references = [[" ".join(jieba.cut(s)) for s in ref_list] for ref_list in references]
 bleu_result = bleu.compute(predictions=predictions, references=references)
 chrf_result = chrf.compute(predictions=predictions, references=references)
 meteor_result = meteor.compute(predictions=predictions, references=references)
@@ -35,12 +37,12 @@ print(f"BLEU: {bleu_result['bleu']:.4f}")
 print(f"CHRF: {chrf_result['score']:.4f}")
 print(f"METEOR: {meteor_result['meteor']:.4f}")
 
-from bert_score import score
+# from bert_score import score
 
-P = ["我今天去超市了。"]
-R = ["今天我去超市了。"]
-P, R, F1 = score(P, R, lang="zh", verbose=True)
-print(f"BERTScore F1: {F1[0]:.4f}")
+# P = ["我今天去超市了。"]
+# R = ["今天我去超市了。"]
+# P, R, F1 = score(P, R, lang="zh", verbose=True)
+# print(f"BERTScore F1: {F1[0]:.4f}")
 
 
 # # ========== 2. 回译评估（Round-trip） ==========

@@ -21,6 +21,7 @@ class HomeModel:
     def translate(self, input_text, target_language, model_name, *arg):
         translator = self._load_translator(model_name)
         if not translator:
+            print("HomeModel: not translator")
             return ""
         return translator.generate_text(input_text, target_language, *arg)
     
@@ -61,14 +62,6 @@ class HomeModel:
             #获取当前目录的相对路径
             relative_path = os.path.relpath(root, model_root)
             
-            if relative_path == "bin": #每个子文件夹是一个模型
-                for sub_dir in dirs:
-                    model_name = sub_dir
-                    model_path = os.path.join(root, sub_dir)  #绝对路径
-                    model_info = {"model_path": model_path, "model_type": "bin"}
-                    self.model_dict[model_name] = model_info
-                continue
-                
             if relative_path == "gguf": #每个文件代表一个模型
                 for file in files:
                     model_name, ext = os.path.splitext(file)
@@ -77,12 +70,20 @@ class HomeModel:
                         model_info = {"model_path": model_path, "model_type": "gguf"}
                         self.model_dict[model_name] = model_info
                 continue
-                
+            
             if relative_path == "safetensors": #每个子文件夹是一个模型
                 for sub_dir in dirs:
                     model_name = sub_dir
                     model_path = os.path.join(root, sub_dir)  #绝对路径
                     model_info = {"model_path": model_path, "model_type": "safetensors"}
+                    self.model_dict[model_name] = model_info
+                continue
+                
+            if relative_path == "bin": #每个子文件夹是一个模型
+                for sub_dir in dirs:
+                    model_name = sub_dir
+                    model_path = os.path.join(root, sub_dir)  #绝对路径
+                    model_info = {"model_path": model_path, "model_type": "bin"}
                     self.model_dict[model_name] = model_info
                 continue
             
