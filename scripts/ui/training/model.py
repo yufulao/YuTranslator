@@ -3,7 +3,7 @@ import config
 from translator.translator_safetensors import SafetensorsTranslator
 
 
-class TraningModel:
+class TrainingModel:
     def __init__(self):
         self._init_model_dict()
         

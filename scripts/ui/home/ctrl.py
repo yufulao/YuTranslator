@@ -12,20 +12,29 @@ class HomeCtrl:
     #打开界面
     def open(self):
         model_name_list = list(self._model.model_dict.keys())
-        return self._view.open(model_name_list)
+        lora_list = list(self._model.lora_dict.keys())
+        return self._view.open(model_name_list, lora_list)
+    
+    #获取translator
+    def get_translator(self, model_name, lora_input):
+        return self._model.load_translator(model_name, lora_input)
     
     #外部使用Home界面的参数进行翻译
-    def translate(self, input_text, target_language)->str:
-        from ui.main_controller import MainController
-        state = MainController().state
-        if "home" not in state:
-            return "未设置翻译界面参数"
-        home_info = state["home"]
-        model_name = home_info["model_name"]
-        temperature = home_info["temperature"]
-        max_tokens = home_info["max_tokens"]
-        top_p = home_info["top_p"]
-        return self._on_btn_click_generate(input_text, target_language, model_name, temperature, max_tokens, top_p)
+    def translate(self, input_text, target_language, model_name, lora_input, *arg)->str:
+        print(f"translator params:\n  input_text: {input_text}\n  target_language: {target_language}\n  "  +
+              f"model_name: {model_name}\n  lora_input: {lora_input}\n  *arg: {arg}")
+        translator = self._model.load_translator(model_name, lora_input)
+        if not translator:
+            print("没有translator")
+            return "没有translator"
+        return translator.generate_text(input_text, target_language, *arg)
+    
+    #通过translator翻译
+    def translate_by_translator(self, translator, input_text, target_language, *arg):
+        if not translator:
+            print("没有translator")
+            return "没有translator"
+        return translator.generate_text(input_text, target_language, *arg)  
         
     #绑定事件
     def _bind_event(self):
@@ -33,9 +42,8 @@ class HomeCtrl:
         self._view.action_get_model_type = self._model.get_model_type
     
     #当点击翻译按钮时
-    def _on_btn_click_generate(self, input_text, target_language, model_name, *arg):
-        print(f"translator params:\n  input_text: {input_text}\n  target_language: {target_language}\n  model_name: {model_name}\n  *arg: {arg}")
-        output = self._model.translate(input_text, target_language, model_name, *arg)
+    def _on_btn_click_generate(self, input_text, target_language, model_name, lora_input, *arg):
+        output = self.translate(input_text, target_language, model_name, lora_input, *arg)
         # print(f"翻译结果: {output}")
         return output
 

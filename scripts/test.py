@@ -1,62 +1,19 @@
-import sys
-import os
-import config
+# import torch
+# if torch.cuda.is_available():
+#     device = torch.device("cuda:0")  # 使用第一个 GPU
+#     capability = torch.cuda.get_device_capability(device)
+#     print(f"Compute Capability: {capability[0]}.{capability[1]}")
+# else:
+#     print("CUDA is not available.")
 
-path_root = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(path_root)
-sys.path.insert(0, config.LIB_DIR)
+#   pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-
-import evaluate
-import nltk
-from transformers import pipeline
-import jieba
-
-# 下载 METEOR 所需的词典（只需要一次）
-nltk.download("wordnet")
-nltk.download("punkt")
-
-# 加载评估指标
-bleu = evaluate.load("bleu")
-chrf = evaluate.load("chrf")
-meteor = evaluate.load("meteor")
-
-# 原文（源语言）、预测翻译、参考翻译（目标语言）
-predictions = ["我今天去超市了。"]
-references = [["我今天去超市了。"]]  # 多个参考翻译需用二维列表
-
-# ========== 1. 常规评估 ==========
-print("普通评估（需要参考翻译）:")
-# predictions = [" ".join(jieba.cut(s)) for s in predictions]
-# references = [[" ".join(jieba.cut(s)) for s in ref_list] for ref_list in references]
-bleu_result = bleu.compute(predictions=predictions, references=references)
-chrf_result = chrf.compute(predictions=predictions, references=references)
-meteor_result = meteor.compute(predictions=predictions, references=references)
-
-print(f"BLEU: {bleu_result['bleu']:.4f}")
-print(f"CHRF: {chrf_result['score']:.4f}")
-print(f"METEOR: {meteor_result['meteor']:.4f}")
-
-# from bert_score import score
-
-# P = ["我今天去超市了。"]
-# R = ["今天我去超市了。"]
-# P, R, F1 = score(P, R, lang="zh", verbose=True)
-# print(f"BERTScore F1: {F1[0]:.4f}")
+#   cd D:/project/YuTranslator/scripts && D: && venv\Scripts\activate
 
 
-# # ========== 2. 回译评估（Round-trip） ==========
-# # 回译模型（英文→中文）
-# back_translator = pipeline("translation", model="Helsinki-NLP/opus-mt-en-zh")
+#   "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+#   set DISTUTILS_USE_SDK=1
+#   pip install https://github.com/woct0rdho/triton-windows/releases/download/v3.1.0-windows.post5/triton-3.1.0-cp311-cp311-win_x64.whl
 
-# back_translations = []
-# for text in predictions:
-#     result = back_translator(text, max_length=100)
-#     back_translations.append(result[0]["translation_text"])
 
-# print("\n🔁 回译 BLEU 评估:")
-# print("回译结果:", back_translations)
-
-# # 回译 BLEU（对比回译结果和原中文）
-# bleu_back = bleu.compute(predictions=back_translations, references=[[s] for s in sources])
-# print(f"Round-trip BLEU: {bleu_back['bleu']:.4f}")
+# 初始化了value的dropdown必须传入input，直接使用value默认值取得的都是默认值

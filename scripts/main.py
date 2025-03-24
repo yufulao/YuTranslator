@@ -4,7 +4,7 @@ import config
 
 path_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(path_root)
-sys.path.insert(0, config.LIB_DIR)
+# sys.path.insert(0, config.LIB_DIR)
 
 
 

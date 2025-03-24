@@ -1,15 +1,14 @@
-from ui.traning.model import TraningModel
-from ui.traning.view import TraningView
+from ui.training.model import TrainingModel
+from ui.training.view import TrainingView
 from peft import LoraConfig, get_peft_model
 from transformers import TrainingArguments, Trainer
 from datasets import load_dataset
-import config
+import torch
 
-
-class TraningCtrl:
+class TrainingCtrl:
     def __init__(self):
-        self._model = TraningModel()
-        self._view = TraningView()
+        self._model = TrainingModel()
+        self._view = TrainingView()
         self._view.action_start_training = self.start_training
         
     def open(self):
@@ -39,8 +38,13 @@ class TraningCtrl:
             report_to="none"
         )
         
+        #GPTQ的不支持lora
+        if "GPTQ" in model_name or "gptq" in model_name:
+            return "GPTQ量化的safetensors不支持lora"
         
         translator = self._model.load_translator(model_name)
+        if translator == None:
+            return 
         model = get_peft_model(translator.model, lora_config)
         print("Lora适配层已插入")
         model.print_trainable_parameters()
@@ -48,6 +52,10 @@ class TraningCtrl:
         #处理数据
         dataset = load_dataset("json", data_files=train_data)
         dataset = dataset.map(lambda examples: self._preprocess_function(examples, translator.tokenizer), batched=True)
+        print("First batch after preprocessing:")
+        print("Input IDs:", dataset["train"][0]["input_ids"])
+        print("Labels:", dataset["train"][0]["labels"])
+        print("Attention mask:", dataset["train"][0]["attention_mask"])
         
         trainer = Trainer(
             model=model,
@@ -62,10 +70,27 @@ class TraningCtrl:
     
     #处理数据集
     def _preprocess_function(self, examples, tokenizer):
-        #处理输入输出
-        model_inputs = tokenizer(examples["input"], truncation=True, padding=True)
-        labels = tokenizer(examples["output"], truncation=True, padding=True).input_ids
-        #由于Transformer模型的目标是通过labels来计算损失，所以我们需要将输出标记为labels
-        #由于模型生成时会将pad_token_id视为负数，因此需要去除padding部分
-        model_inputs["labels"] = labels
-        return model_inputs
+        inputs = tokenizer(
+            examples["input"],
+            truncation=True,
+            padding=True,
+            max_length=512  # 设置一个固定的最大长度（根据数据调整）
+        )
+        
+        # 对 output 进行 tokenization，并确保长度与 input 一致
+        outputs = tokenizer(
+            examples["output"],
+            truncation=True,
+            padding=True,
+            max_length=len(inputs["input_ids"][0])  # 动态截断到 input 的长度
+        )
+        
+        # 将 output 的 input_ids 作为 labels
+        inputs["labels"] = outputs["input_ids"]
+        
+        # 打印形状以验证
+        print("Input IDs shape:", torch.tensor(inputs["input_ids"]).shape)
+        print("Labels shape:", torch.tensor(inputs["labels"]).shape)
+        print("Attention mask shape:", torch.tensor(inputs["attention_mask"]).shape)
+        
+        return inputs

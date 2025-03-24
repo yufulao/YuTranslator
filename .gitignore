@@ -1,7 +1,8 @@
-/scripts/lib
+/scripts/venv
 /training
 /models/bin
 /models/gguf
+/models/lora
 /models/M2M100
 /models/safetensors
 
