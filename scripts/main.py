@@ -1,6 +1,5 @@
 import sys
 import os
-import config
 
 path_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(path_root)

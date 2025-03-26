@@ -1,6 +1,5 @@
 ﻿from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
-import config
 
 class BinTranslator:
     def __init__(self, model_path):
